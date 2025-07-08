@@ -35,9 +35,22 @@ def log_message_to_csv(role, message, file_path="chat_history.csv"):
         writer.writerow([role, message])
 
 
+################################
+
+# Hyperparameters
+
+# model
 model="llama3-8b-8192"  
 #model_name="deepseek-r1-distill-llama-70b"
 
+# threshold for similarity computation between user query and database vectors
+similarity_threshold = 0.5
+
+# max number of retrieved chunks (could be less depending on similarity scores and threshold)
+k = 6    
+
+
+################################
 
 load_dotenv()
 warnings.filterwarnings("ignore")
@@ -52,7 +65,7 @@ llm = ChatGroq(
 )
 
 
-# Load embedded chunks from Vector Database and make retrieve object
+# Load embedded chunks from Vector Database 
 def retrieve_from_vector_db(vector_db_path):
     """
     this function splits out a retriever object from a local vector database
@@ -66,11 +79,11 @@ def retrieve_from_vector_db(vector_db_path):
         embeddings=embeddings,
         allow_dangerous_deserialization=True 
     )
-    retriever = vectorstore.as_retriever(search_type="mmr")   # search_type="similarity"
-    return retriever#, vectorstore
+ 
+    return vectorstore
 
-# Load the retriever and index
-retriever = retrieve_from_vector_db("vector_databases/vector_db_med_quad_answers")
+# Load the vectorstore
+vectorstore = retrieve_from_vector_db("vector_databases/vector_db_med_quad_answers")
 
 
 # This helper function extracts the content field from a message object. 
@@ -103,8 +116,9 @@ contextualize_chain = (
 
 
 qa_system_prompt = (
-    "Answer the user's questions or queries based on the below context which is all related to medicine. " 
-    "If the context doesn't contain any relevant information to the question, do NOT make something up and just say 'Sorry, I don't know. Let's talk about medicine':"
+    "You are an assistant for any medical concerns. Answer the user's questions or queries based on the below context. " 
+    "If the context doesn't contain any relevant information to the question or if the context is empty, "
+    "do NOT make something up and just say 'Sorry, I don't know. Can you rephrase your concern?':"
     "\n\n"
     "###"
     "{context}"
@@ -137,9 +151,14 @@ def history_aware_qa(input):
     else:
         question = input['input']
 
-    # Get context from the retriever
-    context = retriever.invoke(question)
-    #print(context)
+
+    # Return docs and relevance scores in the range [0, 1]. 0 is dissimilar, 1 is most similar.
+    # could be empty, depending on the threshold
+    similarity_results = vectorstore.similarity_search_with_relevance_scores(question, k=k, score_threshold=similarity_threshold)
+    if similarity_results:
+        context, scores = zip(*similarity_results)
+    else:   # no chunks similar enough
+        context = ()
 
     # Get the final answer
     return qa_chain.invoke({
