@@ -1,112 +1,136 @@
-# ds-modeling-pipeline
+# Medical Chatbot version 0.1
 
-Here you find a Skeleton project for building a simple model in a python script or notebook and log the results on MLFlow.
+## Installation (Tested on macOS)
 
-There are two ways to do it: 
-* In Jupyter Notebooks:
-    We train a simple model in the [jupyter notebook](notebooks/EDA-and-modeling.ipynb), where we select only some features and do minimal cleaning. The hyperparameters of feature engineering and modeling will be logged with MLflow
+You can find the installation steps for the first version below.  
+These steps have been tested only on macOS and may not work as expected on other operating systems.
 
-* With Python scripts:
-    The [main script](modeling/train.py) will go through exactly the same process as the jupyter notebook and also log the hyperparameters with MLflow
 
-Data used is the [coffee quality dataset](https://github.com/jldbc/coffee-quality-database).
+## Step A: Create a Virtual Environment
 
-## Requirements:
+### **`macOS`** type the following commands : 
 
-- pyenv with Python: 3.11.3
+- Install the virtual environment and the required packages by following commands:
 
-### Setup
+    ```bash
+    pyenv local 3.11.3
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
 
-Use the requirements file in this repo to create a new environment.
 
-```BASH
-make setup
+## Step 1: Installation
 
-#or
+### 1.1: Install Homebrew
 
-pyenv local 3.11.3
-python -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements_dev.txt
-```
+` Note: If you want to install the desktop (GUI) version of Ollama, please skip to Step 1.2`
 
-The `requirements.txt` file contains the libraries needed for deployment.. of model or dashboard .. thus no jupyter or other libs used during development.
+If Homebrew is not already installed on your system, please install it first.
 
-The MLFLOW URI should **not be stored on git**, you have two options, to save it locally in the `.mlflow_uri` file:
-
-```BASH
-echo http://127.0.0.1:5000/ > .mlflow_uri
-```
-
-This will create a local file where the uri is stored which will not be added on github (`.mlflow_uri` is in the `.gitignore` file). Alternatively you can export it as an environment variable with
+You can check if Homebrew is installed by running the following command in your terminal:
 
 ```bash
-export MLFLOW_URI=http://127.0.0.1:5000/
+brew --version
 ```
-
-This links to your local mlflow, if you want to use a different one, then change the set uri.
-
-The code in the [config.py](modeling/config.py) will try to read it locally and if the file doesn't exist will look in the env var.. IF that is not set the URI will be empty in your code.
-
-## Usage
-
-### Creating an MLFlow experiment
-
-You can do it via the GUI or via [command line](https://www.mlflow.org/docs/latest/tracking.html#managing-experiments-and-runs-with-the-tracking-service-api) if you use the local mlflow:
+You can install Homebrew by running the following command in your terminal: For more info please see : [Homebrew Website](https://brew.sh/)
 
 ```bash
-mlflow experiments create --experiment-name 0-template-ds-modeling
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Check your local mlflow
+### 1.2: Install Ollama
+
+If Ollama is not already installed on your system, you can install it using the `install_ollama.sh`script provided in this repository. Alternatively, you can download and install the Desktop (GUI) version from the [Ollama Website](https://ollama.com/).
+**For stability reasons, downloading and installing the Desktop (GUI) version of the Ollama is recommended.**
+
+If you want to install via script, make sure it has execution permissions:
 
 ```bash
-mlflow ui
+cd ollama_files
+chmod +x install_ollama.sh
+```
+Then, run the script:
+```bash
+./install_ollama.sh
 ```
 
-and open the link [http://127.0.0.1:5000](http://127.0.0.1:5000)
+### Step 1.3: Configure and Run Training
 
-This will throw an error if the experiment already exists. **Save the experiment name in the [config file](modeling/config.py).**
+Open the `config.py` file and adjust the necessary parameters such as:
 
-In order to train the model and store test data in the data folder and the model in models run:
+- `LLM_MODEL` – the local model you want to use
+- `CHUNK_SIZE` – the size of each text chunk
+- `CHUNK_OVERLAP` – the overlap between consecutive chunks
+
+Please make sure that the dataset is located in the `data` folder and the file is named `medquad_cleaned.csv`.
+Or change the `CLEANED_DATA_PATH` in `config.py`.
+
+After making your changes, run the training script:
 
 ```bash
-#activate env
-source .venv/bin/activate
-
-python -m modeling.train
+cd modeling
+python train.py
 ```
 
-In order to test that predict works on a test set you created run:
+## Step 2: Starting the MedChatbot
+
+### 2.1: Start Ollama Server
+Make sure Ollama is runnig in your computer. To check it please go to `http://localhost:11434` in your browser. You should see something like `Ollama is running`.<br>
+
+### To run the Ollama:
+
+### 2.1.1: If you downloaded the desktop (GUI) version from the website:
+ Simply launch it like any other desktop application. 
+### 2.1.2: If you installed it via Homebrew:
+ Start the server by running the following command in your NEW terminal (it would run as a service):
+```bash
+ollama serve
+```
+
+### Step 2.1: Launch the Chatbot UI
+
+Navigate to the `streamlit` folder and run the `streamlit_app.py` file using Streamlit:
 
 ```bash
-python modeling/predict.py models/linear data/X_test.csv data/y_test.csv
+cd streamlit
+streamlit run streamlit_app.py
 ```
 
-## About MLFLOW -- delete this when using the template
 
-MLFlow is a tool for tracking ML experiments. You can run it locally or remotely. It stores all the information about experiments in a database.
-And you can see the overview via the GUI or access it via APIs. Sending data to mlflow is done via APIs. And with mlflow you can also store models on S3 where you version them and tag them as production for serving them in production.
-![mlflow workflow](images/0_general_tracking_mlflow.png)
 
-### MLFlow GUI
+**Note:** If the LLM model has not been downloaded before, it may take some time to download on first run.  
+Please check the terminal output for progress.
 
-You can group model trainings in experiments. The granularity of what an experiment is up to your usecase. Recommended is to have an experiment per data product, as for all the runs in an experiment you can compare the results.
-![gui](images/1_gui.png)
+## Important Info for Restarting the Application
 
-### Code to send data to MLFlow
+- To restart the chatbot, it is enough to follow the instructions in **Step 2**.
 
-In order to send data about your model you need to set the connection information, via the tracking uri and also the experiment name (otherwise the default one is used). One run represents a model, and all the rest is metadata. For example if you want to save train MSE, test MSE and validation MSE you need to name them as 3 different metrics.
-If you are doing CV you can set the tracking as nested.
-![mlflow code](images/2_code.png)
+- If for any reason, you need to re-run the training process (i.e., recreate the vector database),  
+you only need to follow **Step 1.3**.
 
-### MLFlow metadata
+- When you specify a model name in the `LLM_MODEL` field in `config.py`,  
+  the corresponding model will be automatically downloaded to your machine (if not already available). Please make sure that the model is available on ollama.com
 
-There is no constraint between runs to have the same metadata tracked. I.e. for one run you can track different tags, different metrics, and different parameters (in cv some parameters might not exist for some runs so this .. makes sense to be flexible).
+- If you make any changes to the `config.py` file, especially the `LLM_MODEL`,  
+  please re-run **Step 2.1** to apply the updated configuration.
 
-- tags can be anything you want.. like if you do CV you might want to tag the best model as "best"
-- params are perfect for hypermeters and also for information about the data pipeline you use, if you scaling vs normalization and so on
-- metrics.. should be numeric values as these can get plotted
+## Notes
 
-![mlflow metadata](images/3_metadata.png)
+- The sentence-transformer currently does not work offline.  
+  Offline support will be implemented and updated in a future version.
+- Data cleaning and exploratory data analysis (EDA) script is available in `cleaning.py`,  
+  but it is not yet automated.  
+  Currently, the chatbot uses a pre-cleaned dataset (`medquad_cleaned.csv`).  
+  This process will be automated in a future version.
+- To maintain the code structure, please make all changes only via the `config.py` file.  
+  If you have any additional parameters you want to add, please let us know.
+
+
+## Troubleshooting
+
+- To check if the local LLM is running properly, you may need to inspect the retrieved chunks.  
+  When you ask questions to the chatbot, monitor the terminal where you launched Streamlit to see the chunks being retrieved in response.
+
+- Most error messages can be seen directly in the terminal where you run `streamlit_app.py`.
