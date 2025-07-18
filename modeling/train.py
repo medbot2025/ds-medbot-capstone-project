@@ -7,7 +7,6 @@ from config import CLEANED_DATA_PATH
 #loading medical documents from csv file
 print(f"The trained dataset path: {CLEANED_DATA_PATH}")
 medical_docs = load_csv_data(csv_path = CLEANED_DATA_PATH)
-
 print(f"Number of loaded pages: {len(medical_docs)}")
 
 # Splitting documents into chunks
