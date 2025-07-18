@@ -8,4 +8,6 @@ CLEANED_DATA_PATH = '../data/medquad_cleaned.csv'  # path to the cleaned medical
 DB_NAME = 'medical'  # name of the vector database
 CHUNK_SIZE = 200  # size of each chunk in characters
 CHUNK_OVERLAP = 50  # overlap size between chunks in characters
+SENTENCE_TRANSFORMER_MODEL_NAME = 'sentence-transformers/all-mpnet-base-v2'  # name of the sentence transformer
+SENTENCE_TRANSFORMER_MODEL_PATH = '../models'  # local path to save the sentence transformer model
 #CHAT_HISTORY_FILE = './chat_history/chat_history.csv' not implemented yet
