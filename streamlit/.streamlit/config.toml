@@ -1,0 +1,12 @@
+[theme]
+base="light"
+primaryColor="slateBlue"
+backgroundColor="mintCream"
+secondaryBackgroundColor="darkSeaGreen"
+baseRadius="full"
+
+[theme.sidebar]
+#backgroundColor="aliceBlue"
+backgroundColor="lavender"
+secondaryBackgroundColor="skyBlue"
+baseRadius="none"
