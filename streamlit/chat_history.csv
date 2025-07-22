@@ -4,3 +4,21 @@ user,I have a cold
 assistant,"Sorry to hear that! What symptoms do you have with your cold? Are you experiencing congestion, coughing, sore throat, or fatigue?"
 user,what's your name?
 assistant,"Sorry, I don't know. Can you rephrase your medical concern?"
+user,how are you
+assistant,"Sorry, I don't know. Can you rephrase your medical concern?"
+user,tell me something about cancer
+assistant,"According to the context, there are various types of treatment for cancer mentioned, including:
+
+* Surgery
+* Radiation therapy
+* Chemotherapy
+* Targeted therapy
+* New types of treatment being tested in clinical trials
+
+Additionally, it's suggested that patients may want to think about taking part in a clinical trial."
+user,tell me something about childrens diseases
+assistant,"According to the information provided, it seems that there are certain diseases that can affect children. The text mentions ""chILD"" which may help doctors better understand these diseases. Additionally, it is mentioned that having a risk factor does not mean that you will get the disease, and not having risk factors doesn't mean that you won't get the disease.
+
+It also talks about immune system disorders in children, stating that they aren't able to fight illness and disease as well as others. Furthermore, it mentions that one particular disease is more likely to affect boys than girls, and most cases occur in children younger than 5 years old.
+
+Please note that this information may not be exhaustive or provide specific details about the diseases mentioned. If you have any further questions or concerns, I would recommend consulting a medical professional for personalized advice."

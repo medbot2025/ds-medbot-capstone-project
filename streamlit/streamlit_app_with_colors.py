@@ -12,6 +12,7 @@ st.markdown("""
     .stButton > button {
         border-radius: 10px;
         padding: 10px 20px;
+        color: #fdfdfb";
     }
     </style>
     """, unsafe_allow_html=True)
@@ -22,6 +23,7 @@ st.markdown("""
     .stDownloadButton > button {
         border-radius: 10px;
         padding: 10px 20px;
+        color: #fdfdfb";
     }
     </style>
     """, unsafe_allow_html=True)
@@ -67,6 +69,8 @@ if prompt := st.chat_input("Hi, I'm a medical chatbot, how can I help you?"):
     ch.log_message_to_csv("assistant", response)  
     # Log bot message
 
+
+st.sidebar.image("QureAI_4.png")
 # Reset conversation button    
 st.sidebar.button('Reset Chat', on_click= ch.reset_conversation, use_container_width=True, type="primary")
 
